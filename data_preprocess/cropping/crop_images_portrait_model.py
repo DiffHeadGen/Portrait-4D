@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import os
 import numpy as np
 from PIL import Image
@@ -63,6 +64,22 @@ def POS(xp,x,cate=None):
 
     return yaw, pitch, roll, translate, scale
 
+@dataclass
+class CropParams:
+    left: int
+    up: int
+    s: float
+    
+    
+def retarget_img(img:Image.Image, croped_img:Image.Image, cp:CropParams):
+    w0,h0 = img.size
+    s = cp.s
+    w = (w0*s).astype(np.int32)
+    h = (h0*s).astype(np.int32)
+    img = img.resize((w,h),resample = Image.Resampling.LANCZOS)
+    img.paste(croped_img, (cp.left, cp.up))
+    return img.resize((w0,h0),resample = Image.Resampling.LANCZOS)
+
 
 def resize_n_crop_img(img, lm, ldmk, ldmk_3d, t, s, target_size=256.):
     w0,h0 = img.size
@@ -104,7 +121,7 @@ def resize_n_crop_img(img, lm, ldmk, ldmk_3d, t, s, target_size=256.):
     ldmk_3d = ldmk_3d - np.reshape(
             np.array([(w/2 - target_size/2), (h/2-target_size/2)]), [1, 2])
 
-    return crop_img, crop_lm, ldmk, ldmk_3d
+    return crop_img, crop_lm, ldmk, ldmk_3d, CropParams(left, up, s)
 
 
 def align_img_bfm(img, lm, ldmk, ldmk_3d, target_size=224., rescale_factor=102., index=-1, use_smooth=False):
@@ -140,9 +157,9 @@ def align_img_bfm(img, lm, ldmk, ldmk_3d, target_size=224., rescale_factor=102.,
         s = s_smoother.smooth(index, s)
     
     # processing the image
-    img_new, lm_new, ldmk, ldmk_3d = resize_n_crop_img(img, lm, ldmk, ldmk_3d, t, s, target_size=target_size)
+    img_new, lm_new, ldmk, ldmk_3d, crop_params = resize_n_crop_img(img, lm, ldmk, ldmk_3d, t, s, target_size=target_size)
     trans_params = np.array([w0, h0, s, t[0][0], t[1][0]])
 
-    return trans_params, img_new, lm_new, ldmk, ldmk_3d
+    return trans_params, img_new, lm_new, ldmk, ldmk_3d, crop_params
 
         

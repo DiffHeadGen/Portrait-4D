@@ -8,6 +8,7 @@
 
 ##### python internal and external package
 import os
+import pickle
 import cv2
 import time
 import math
@@ -61,6 +62,10 @@ def _fix_image( image):
     image = np.clip(image, 0, 255).astype(np.uint8)
     return image
 
+def change_extension(path, new_extension):
+    base = os.path.splitext(path)[0]
+    return base + new_extension
+
 class Tester(object):
     def __init__(self, cfg):
         self.cfg = cfg
@@ -93,7 +98,12 @@ class Tester(object):
     def inference(self, input_dir, save_dir, video=True, use_crop_smooth=False):
 
         test_start = time.time()
+        def get_sub_dir(base_dir, sub_name):
+            sub_dir = os.path.join(base_dir, sub_name)
+            os.makedirs(sub_dir, exist_ok=True)
+            return sub_dir
         
+        save_crop_params = get_sub_dir(save_dir, "crop_params")
         align_dir = os.path.join(save_dir, "align_images")
         save_dir_bfm = os.path.join(save_dir, "bfm_params")
         save_dir_bfm_vis = os.path.join(save_dir, "bfm_vis")
@@ -164,7 +174,7 @@ class Tester(object):
                     
                     # cropping
                     try:
-                        trans_params, im_crop, ldmk_2d_5pt_crop, ldmk, ldmk_3d = align_img_bfm(Image.fromarray(img[:,:,::-1]), ldmk_2d_5pt, ldmk, ldmk_3d, target_size=self.target_size, rescale_factor=self.rescale_factor, index=img_idx, use_smooth=use_crop_smooth)
+                        trans_params, im_crop, ldmk_2d_5pt_crop, ldmk, ldmk_3d, crop_params = align_img_bfm(Image.fromarray(img[:,:,::-1]), ldmk_2d_5pt, ldmk, ldmk_3d, target_size=self.target_size, rescale_factor=self.rescale_factor, index=img_idx, use_smooth=use_crop_smooth)
                     except Exception as e:
                         self.fd_ldmk_detector.reset()
                         print(e)
@@ -175,10 +185,13 @@ class Tester(object):
                     ldmk = np.concatenate([ldmk[:, 0:1], self.target_size-ldmk[:, 1:2]], 1)
                     ldmk_3d = np.concatenate([ldmk_3d[:, 0:1], self.target_size-ldmk_3d[:, 1:2]], 1)   
                     
-                    # save results                            
-                    np.save(os.path.join(save_dir_ldmk2d, img_item.replace(".png", ".npy").replace(".jpg", ".npy")), ldmk)
-                    np.save(os.path.join(save_dir_ldmk3d, img_item.replace(".png", ".npy").replace(".jpg", ".npy")), ldmk_3d)
-                    np.save(os.path.join(save_dir_bfm, img_item.replace(".png", ".npy").replace(".jpg", ".npy")), bfm_params)
+                    # save results                       
+                    pickle.dump(crop_params, open(os.path.join(save_crop_params, change_extension(img_item, ".pkl")), 'wb'))
+                    save_name = change_extension(img_item, ".npy")     
+                    np.save(os.path.join(save_dir_ldmk2d, save_name), ldmk)
+                    np.save(os.path.join(save_dir_ldmk2d, save_name), ldmk)
+                    np.save(os.path.join(save_dir_ldmk3d, save_name), ldmk_3d)
+                    np.save(os.path.join(save_dir_bfm, save_name), bfm_params)
                     im_crop.save(os.path.join(align_dir, img_item), quality=95)
                     Image.fromarray(visual.astype(np.uint8)).save(os.path.join(save_dir_bfm_vis, img_item), quality=95)
         
