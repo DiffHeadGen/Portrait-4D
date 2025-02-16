@@ -13,3 +13,20 @@ portrait4d/training-runs-portrait4d-v2/
 data_preprocess/bfm_to_flame/data/
 data_preprocess/bfm_to_flame/model/
 data_preprocess/bfm_to_flame/mesh/
+portrait4d/models/pdfgc/weights/motion_model.pth
+results/
+data_preprocess/assets/facedetect/retinaface/Resnet50_Final.pth
+data_preprocess/assets/facerecon/deep3d_2023/epoch_20.pth
+data_preprocess/assets/hrnet_w18_wflw/h3r/model.pth
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python egg files
+*.egg
+*.egg-info
+dist/
+build/
+
+test_data/
