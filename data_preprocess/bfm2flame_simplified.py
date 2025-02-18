@@ -97,16 +97,9 @@ def bfm_angles_to_flame_poses_rectified(angles, diff_euler=np.array([0.08489475,
 
     return bfm2flame_poses_rectified
 
-# main function for bfm to flame parameter transfer
-@click.command()
-@click.option('--input_dir', type=str, help='Input folder', default='')
-@click.option('--save_dir', type=str, help='Input folder', default='')
-@click.option('--use_mapper', type=bool, help='Use bfm2flame mapper to obtain flame parameters', default=True)
-
-def main(input_dir:str, save_dir:str, use_mapper:bool):
-    
-    root_path = input_dir
-    save_path = os.path.join(save_dir,'bfm2flame_params_simplified')
+def bfm2flame_simplified(base_dir:str, use_mapper:bool=True):
+    root_path = base_dir
+    save_path = os.path.join(base_dir,'bfm2flame_params_simplified')
     os.makedirs(save_path,exist_ok=True)
     all_files = sorted(os.listdir(os.path.join(root_path,'bfm_params')))
     
@@ -151,6 +144,3 @@ def main(input_dir:str, save_dir:str, use_mapper:bool):
         bfm2flame_params = np.concatenate([c, bfm2flame_shapes, bfm2flame_exps, bfm2flame_poses, bfm2flame_jawposes, bfm2flame_eyeposes], axis=0).astype(np.float32)
         np.save(os.path.join(save_path,file), bfm2flame_params.reshape(-1))
 
-
-if __name__ == '__main__':
-    main()

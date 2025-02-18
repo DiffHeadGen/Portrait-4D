@@ -71,13 +71,13 @@ class CropParams:
     s: float
     
     
-def retarget_img(img:Image.Image, croped_img:Image.Image, cp:CropParams):
+def retarget_img(img:Image.Image, cropped_img:Image.Image, cp:CropParams):
     w0,h0 = img.size
     s = cp.s
     w = (w0*s).astype(np.int32)
     h = (h0*s).astype(np.int32)
     img = img.resize((w,h),resample = Image.Resampling.LANCZOS)
-    img.paste(croped_img, (cp.left, cp.up))
+    img.paste(cropped_img, (cp.left, cp.up))
     return img.resize((w0,h0),resample = Image.Resampling.LANCZOS)
 
 

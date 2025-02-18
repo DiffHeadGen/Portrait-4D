@@ -7,6 +7,7 @@ conda install -c fvcore -c iopath -c conda-forge fvcore iopath -y
 pip install "git+https://github.com/facebookresearch/pytorch3d.git@v0.6.2"
 
 pip install -e ../expdata
+pip install face-alignment
 
 pip install huggingface-hub
 
