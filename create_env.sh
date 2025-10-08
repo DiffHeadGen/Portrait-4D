@@ -1,4 +1,4 @@
-ml CUDA/11.6.0
+ml CUDA/11.8.0
 
 conda create -n portrait4d python=3.8 -y
 conda activate portrait4d

@@ -44,8 +44,12 @@ def test_retarget():
 
 def main():
     loader = GenLoader()
-    loader.run_video(loader.test_20250218_row_data)
+    loader.run_all()
+    # for row in loader.all_data_rows:
+    #     print(row.source_output.crop_dir, row.source_img_path)
+        
 
 
 if __name__ == "__main__":
     main()
+

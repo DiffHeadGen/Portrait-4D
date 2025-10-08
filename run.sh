@@ -1,4 +1,4 @@
-ml CUDA/11.6.0
+ml CUDA/11.8.0
 
 cd portrait4d
 empty_gpu=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F ', ' '{if ($2 < 512) print $1}' | head -n 1)

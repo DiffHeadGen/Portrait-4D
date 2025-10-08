@@ -1,4 +1,4 @@
-ml CUDA/11.6.0
+ml CUDA/11.8.0
 
 if [ -n "$1" ]; then
     gpu=$1
@@ -10,4 +10,6 @@ else
     fi
 fi
 
+cd data_preprocess
 CUDA_VISIBLE_DEVICES=$gpu python preprocess_exp.py
+cd ..
